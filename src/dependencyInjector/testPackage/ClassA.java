@@ -15,17 +15,17 @@ public class ClassA {
     private ClassC classC;
     private ClassC classE;
 
-//    @Inject
-//    public ClassA(ClassC classC) {
-//        this.classC = classC;
-//    }
-//
-//    @Inject
-//    public ClassA(ClassC classC, ClassE classE) {
-//
-//    }
+    @Inject
+    public ClassA(ClassC classC) {
+        this.classC = classC;
+    }
 
-//    public String getClassC() {
-//        return classC.getName();
-//    }
+    @Inject
+    public ClassA(ClassC classC, ClassE classE) {
+
+    }
+
+    public String getClassC() {
+        return classC.getName();
+    }
 }
