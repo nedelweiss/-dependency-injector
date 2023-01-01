@@ -1,4 +1,4 @@
-package dependency_injector.custom_annotations.annotationProcessor;
+package dependency_injector.custom_annotations.annotation_processor;
 
 import dependency_injector.custom_annotations.Component;
 
