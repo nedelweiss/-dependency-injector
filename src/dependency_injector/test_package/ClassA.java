@@ -1,9 +1,9 @@
-package dependencyInjector.testPackage;
+package dependency_injector.test_package;
 
-import dependencyInjector.customAnnotations.Component;
-import dependencyInjector.customAnnotations.Inject;
-import dependencyInjector.testPackage.subPackage.ClassB;
-import dependencyInjector.testPackage.subPackage.ClassE;
+import dependency_injector.custom_annotations.Component;
+import dependency_injector.custom_annotations.Inject;
+import dependency_injector.test_package.subPackage.ClassB;
+import dependency_injector.test_package.subPackage.ClassE;
 
 @Component
 public class ClassA {

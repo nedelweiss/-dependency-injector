@@ -1,7 +1,7 @@
-package dependencyInjector;
+package dependency_injector;
 
-import dependencyInjector.customAnnotations.annotationProcessor.ComponentProcessor;
-import dependencyInjector.customAnnotations.annotationProcessor.InjectProcessor;
+import dependency_injector.custom_annotations.annotationProcessor.ComponentProcessor;
+import dependency_injector.custom_annotations.annotationProcessor.InjectProcessor;
 
 import java.io.File;
 import java.nio.file.Path;

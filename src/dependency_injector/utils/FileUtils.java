@@ -1,4 +1,4 @@
-package dependencyInjector.utils;
+package dependency_injector.utils;
 
 import java.io.File;
 import java.util.ArrayList;

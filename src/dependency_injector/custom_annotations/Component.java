@@ -1,4 +1,4 @@
-package dependencyInjector.customAnnotations;
+package dependency_injector.custom_annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

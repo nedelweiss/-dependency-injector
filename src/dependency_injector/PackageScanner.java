@@ -1,4 +1,4 @@
-package dependencyInjector;
+package dependency_injector;
 
 import java.io.File;
 import java.nio.file.Files;

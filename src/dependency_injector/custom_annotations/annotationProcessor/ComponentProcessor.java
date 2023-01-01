@@ -1,6 +1,6 @@
-package dependencyInjector.customAnnotations.annotationProcessor;
+package dependency_injector.custom_annotations.annotationProcessor;
 
-import dependencyInjector.customAnnotations.Component;
+import dependency_injector.custom_annotations.Component;
 
 import java.util.List;
 import java.util.Optional;

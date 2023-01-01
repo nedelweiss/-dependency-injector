@@ -1,4 +1,4 @@
-package dependencyInjector.testPackage;
+package dependency_injector.test_package;
 
 public class ClassC {
     private String name;
