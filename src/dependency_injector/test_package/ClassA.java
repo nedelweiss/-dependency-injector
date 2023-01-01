@@ -7,6 +7,7 @@ import dependency_injector.test_package.sub_package.ClassE;
 
 @Component
 public class ClassA {
+
     @Inject
     private ClassD classD;
     @Inject

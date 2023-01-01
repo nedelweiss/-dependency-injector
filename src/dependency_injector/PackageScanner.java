@@ -11,11 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PackageScanner {
+
     private final Pattern PATTERN = Pattern.compile((".+?(?=.java)"));
     private final String PACKAGE_SEPARATOR = ".";
     private final Logger logger = Logger.getLogger(PackageScanner.class.getName());
 
-    public List<Class<?>> classScanner(File directory, String packageName) {
+    List<Class<?>> classScanner(File directory, String packageName) {
         File[] files = directory.listFiles();
 
         List<Class<?>> classes = new ArrayList<>();

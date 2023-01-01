@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileUtils {
+
+    private FileUtils() {
+        // hide public constructor
+    }
+
     public static List<File> allFilesFromFolder(File directory) {
         List<File> directoryContent = new ArrayList<>();
         File[] files = directory.listFiles();

@@ -13,42 +13,44 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class InjectProcessor {
-    private final Logger logger = Logger.getLogger(InjectProcessor.class.getName());
 
-    public List<Object> inject(List<Class<?>> classes) {
-        List<Object> objects = new ArrayList<>();
-        for (Class<?> c : classes) {
-            List<Constructor<?>> constructors = getWithAnnotation(c.getDeclaredConstructors());
-            List<Field> fields = getWithAnnotation(c.getDeclaredFields());
+    private final Logger LOGGER = Logger.getLogger(InjectProcessor.class.getName());
 
+    public List<Object> inject(List<Class<?>> classesToInject) {
+        final List<Object> result = new ArrayList<>();
+        for (Class<?> classToInject : classesToInject) {
+            List<Constructor<?>> constructors = getWithAnnotation(classToInject.getDeclaredConstructors());
             Object instanceByConstructor = createInstanceByConstructor(constructors);
+
+            List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
             Object instanceByField = createInstanceByField(fields);
 
-            objects.add(instanceByConstructor);
-            objects.add(instanceByField);
+            result.add(instanceByConstructor);
+            result.add(instanceByField);
         }
-        return objects;
+        return result;
     }
 
-    private Object createInstanceByConstructor(List<Constructor<?>> constructors) {
+    private Object createInstanceByConstructor(List<Constructor<?>> injectableByConstructors) {
         Object instance = null;
         try {
-            Constructor<?> constructor = processConstructors(constructors.toArray(new Constructor<?>[0]));
+            Constructor<?> constructor = processConstructors(injectableByConstructors.toArray(new Constructor<?>[0]));
             instance = constructor.newInstance();
         } catch (Exception e) {
-            logger.info("No constructors found");
+            LOGGER.info("No constructors found"); // TODO: but what about empty constructor which always exists?
         }
         return instance;
     }
 
-    private Object createInstanceByField(List<Field> fields) {
+    // TODO: recursive approach is needed?
+    private Object createInstanceByField(List<Field> injectableFields) {
         Object instance = null;
-        for (Field field : fields) {
+        for (Field field : injectableFields) {
             try {
                 Constructor<?> constructorWithoutParameters = processConstructors(field.getType().getConstructors());
                 instance = constructorWithoutParameters.newInstance();
             } catch (Exception e) {
-                logger.info("Not the only constructor found");
+                LOGGER.info("Not the only constructor found");
             }
         }
         return instance;
@@ -61,16 +63,17 @@ public class InjectProcessor {
             }
         }
 
+        // TODO: additional logic is needed?
         // process the remaining constructors - check for annotation: @Inject
-        List<Constructor<?>> constructorsWithAnnotation = getWithAnnotation(constructors);
-        if (constructorsWithAnnotation.size() != 1) {
+        List<Constructor<?>> constructorsWithInjectAnnotation = getWithAnnotation(constructors);
+        if (constructorsWithInjectAnnotation.size() != 1) {
             throw new NotOnlyConstructorException("Unable to define constructor");
         }
-        return constructorsWithAnnotation.get(0);
+        return constructorsWithInjectAnnotation.get(0);
     }
 
-    private <T extends AccessibleObject> List<T> getWithAnnotation(T[] objects) {
-        return Arrays.stream(objects)
+    private <T extends AccessibleObject> List<T> getWithAnnotation(T[] injectableClassItems) {
+        return Arrays.stream(injectableClassItems)
                 .filter(object -> Optional.ofNullable(object.getAnnotation(Inject.class)).isPresent())
                 .collect(Collectors.toList());
     }

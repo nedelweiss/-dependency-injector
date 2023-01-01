@@ -8,23 +8,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class Main {
+public class DependencyInjector {
+
     private static final String CURRENT_DIR_KEY = "user.dir";
-    private static final String PATH_TO_TEST_PACKAGE = "\\src\\dependencyInjector\\testPackage";
+    private static final String PATH_TO_TEST_PACKAGE = "\\src\\dependency_injector\\test_package";
 
     public static void main(String[] args) {
         PackageScanner packageScanner = new PackageScanner();
 
-        String property = System.getProperty(CURRENT_DIR_KEY);
-
-        Path path = Paths.get(property, PATH_TO_TEST_PACKAGE);
+        Path path = Paths.get(System.getProperty(CURRENT_DIR_KEY), PATH_TO_TEST_PACKAGE);
         File directory = path.toFile();
 
-        List<Class<?>> classes = packageScanner.classScanner(directory, "dependencyInjector.testPackage");
+        List<Class<?>> scannedClasses = packageScanner.classScanner(directory, "dependency_injector.test_package");
 
         ComponentProcessor componentProcessor = new ComponentProcessor();
-        InjectProcessor injectProcessor = new InjectProcessor();
-        List<Class<?>> collection = componentProcessor.process(classes);
-        List<Object> objects = injectProcessor.inject(collection);
+        List<Class<?>> classesWithComponentAnnotation = componentProcessor.process(scannedClasses);
+
+        List<Object> injectedDependencies = new InjectProcessor().inject(classesWithComponentAnnotation); // TODO: ???
     }
 }
