@@ -42,7 +42,7 @@ public class InjectProcessor {
         return instance;
     }
 
-    // TODO: recursive approach is needed?
+    // TODO: recursive approach is needed for fields
     private Object createInstanceByField(List<Field> injectableFields) {
         Object instance = null;
         for (Field field : injectableFields) {
@@ -63,8 +63,7 @@ public class InjectProcessor {
             }
         }
 
-        // TODO: additional logic is needed?
-        // process the remaining constructors - check for annotation: @Inject
+        // process the remaining constructors - check for @Inject annotation
         List<Constructor<?>> constructorsWithInjectAnnotation = getWithAnnotation(constructors);
         if (constructorsWithInjectAnnotation.size() != 1) {
             throw new NotOnlyConstructorException("Unable to define constructor");

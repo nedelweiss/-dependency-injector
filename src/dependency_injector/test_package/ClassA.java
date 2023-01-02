@@ -12,9 +12,8 @@ public class ClassA {
     private ClassD classD;
     @Inject
     private ClassB classB;
-
     private ClassC classC;
-    private ClassC classE;
+    private ClassE classE;
 
     @Inject
     public ClassA(ClassC classC) {
