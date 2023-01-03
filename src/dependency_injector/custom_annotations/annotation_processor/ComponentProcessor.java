@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 public class ComponentProcessor {
 
-    public List<Class<?>> process(List<Class<?>> classes) {
+    public List<Class<?>> process(final List<Class<?>> classes) {
         return classes.stream()
-                .filter(c -> Optional.ofNullable(c.getAnnotation(Component.class)).isPresent())
-                .collect(Collectors.toList());
+            .filter(c -> Optional.ofNullable(c.getAnnotation(Component.class)).isPresent())
+            .collect(Collectors.toList());
     }
 }

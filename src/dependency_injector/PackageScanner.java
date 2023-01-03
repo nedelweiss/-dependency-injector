@@ -1,5 +1,7 @@
 package dependency_injector;
 
+import dependency_injector.utils.FileUtils;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,10 +15,9 @@ import java.util.regex.Pattern;
 public class PackageScanner {
 
     private final Pattern PATTERN = Pattern.compile((".+?(?=.java)"));
-    private final String PACKAGE_SEPARATOR = ".";
-    private final Logger logger = Logger.getLogger(PackageScanner.class.getName());
+    private final Logger LOGGER = Logger.getLogger(PackageScanner.class.getName());
 
-    List<Class<?>> classScanner(File directory, String packageName) {
+    List<Class<?>> scan(File directory, String packageName) {
         File[] files = directory.listFiles();
 
         List<Class<?>> classes = new ArrayList<>();
@@ -25,10 +26,10 @@ public class PackageScanner {
         }
 
         for (File file : files) {
-            String parentPackage = packageName + PACKAGE_SEPARATOR;
+            String parentPackage = packageName + FileUtils.PACKAGE_SEPARATOR;
 
             if (file.isDirectory()) {
-                classes.addAll(classScanner(file, parentPackage + file.getName()));
+                classes.addAll(scan(file, parentPackage + file.getName()));
             } else {
                 try {
                     Optional<String> fileName = fileNameProcessing(file.getName());
@@ -36,7 +37,7 @@ public class PackageScanner {
 
                     classes.add(Class.forName(parentPackage + fileName.get()));
                 } catch (ClassNotFoundException e) {
-                    logger.info(e.getException().getClass().toString());
+                    LOGGER.info(e.getException().getClass().toString());
                 }
             }
         }

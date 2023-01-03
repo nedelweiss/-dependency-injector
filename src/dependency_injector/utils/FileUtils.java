@@ -6,6 +6,8 @@ import java.util.List;
 
 public class FileUtils {
 
+    public static final String PACKAGE_SEPARATOR = ".";
+
     private FileUtils() {
         // hide public constructor
     }
