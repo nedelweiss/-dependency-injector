@@ -5,7 +5,7 @@ public class ClassC {
     private final String name;
 
     public ClassC() {
-        this.name = "class C";
+        this.name = "";
     }
 
     public String getName() {

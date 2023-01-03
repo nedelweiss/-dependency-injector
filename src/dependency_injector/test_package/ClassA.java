@@ -10,22 +10,22 @@ public class ClassA {
 
     @Inject
     private ClassD classD;
+
     @Inject
     private ClassB classB;
-    private ClassC classC;
+
+    @Inject
     private ClassE classE;
+
+    private ClassC classC;
 
     @Inject
     public ClassA(ClassC classC) {
-        this.classC = classC;
+
     }
 
     @Inject
     public ClassA(ClassC classC, ClassE classE) {
 
-    }
-
-    public String getClassC() {
-        return classC.getName();
     }
 }

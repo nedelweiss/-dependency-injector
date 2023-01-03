@@ -24,6 +24,6 @@ public class DependencyInjector {
         ComponentProcessor componentProcessor = new ComponentProcessor();
         List<Class<?>> classesWithComponentAnnotation = componentProcessor.process(scannedClasses);
 
-        List<Object> injectedDependencies = new InjectProcessor().inject(classesWithComponentAnnotation); // TODO: ???
+        List<Object> injectedDependencies = new InjectProcessor().inject(classesWithComponentAnnotation);
     }
 }

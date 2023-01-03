@@ -16,47 +16,52 @@ public class InjectProcessor {
 
     private final Logger LOGGER = Logger.getLogger(InjectProcessor.class.getName());
 
-    public List<Object> inject(List<Class<?>> classesToInject) {
+    public List<Object> inject(final List<Class<?>> classesToInject) {
         final List<Object> result = new ArrayList<>();
         for (Class<?> classToInject : classesToInject) {
-            List<Constructor<?>> constructors = getWithAnnotation(classToInject.getDeclaredConstructors());
-            Object instanceByConstructor = createInstanceByConstructor(constructors);
+//            List<Constructor<?>> constructors = getWithAnnotation(classToInject.getDeclaredConstructors());
+//            Object instanceByConstructor = createInstanceByConstructor(constructors);
+//            result.add(instanceByConstructor);
 
             List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
-            Object instanceByField = createInstanceByField(fields);
-
-            result.add(instanceByConstructor);
-            result.add(instanceByField);
+            result.addAll(createInstanceByField(fields));
         }
         return result;
     }
 
-    private Object createInstanceByConstructor(List<Constructor<?>> injectableByConstructors) {
+    private Object createInstanceByConstructor(final List<Constructor<?>> injectableByConstructors) {
         Object instance = null;
         try {
             Constructor<?> constructor = processConstructors(injectableByConstructors.toArray(new Constructor<?>[0]));
             instance = constructor.newInstance();
         } catch (Exception e) {
-            LOGGER.info("No constructors found"); // TODO: but what about empty constructor which always exists?
+            LOGGER.info("Constructors were not found"); // TODO: but what about empty constructor which always exists?
         }
         return instance;
     }
 
-    // TODO: recursive approach is needed for fields
-    private Object createInstanceByField(List<Field> injectableFields) {
-        Object instance = null;
+    private List<Object> createInstanceByField(final List<Field> injectableFields) {
+        List<Object> createdInstances = new ArrayList<>();
         for (Field field : injectableFields) {
+            Class<?> classOfField = field.getType();
             try {
-                Constructor<?> constructorWithoutParameters = processConstructors(field.getType().getConstructors());
-                instance = constructorWithoutParameters.newInstance();
+                List<Field> withAnnotation = getWithAnnotation(classOfField.getDeclaredFields());
+                if (!withAnnotation.isEmpty()) {
+                    List<Object> instanceByField = createInstanceByField(withAnnotation);
+                    createdInstances.addAll(instanceByField);
+                }
+
+                Constructor<?> constructorWithoutParameters = processConstructors(classOfField.getConstructors());
+                createdInstances.add(constructorWithoutParameters.newInstance());
+                LOGGER.info("The instance has been created: " + classOfField);
             } catch (Exception e) {
-                LOGGER.info("Not the only constructor found");
+                LOGGER.info("Couldn't create instance of: " + classOfField);
             }
         }
-        return instance;
+        return createdInstances;
     }
 
-    private Constructor<?> processConstructors(Constructor<?>[] constructors) throws NotOnlyConstructorException {
+    private Constructor<?> processConstructors(final Constructor<?>[] constructors) throws NotOnlyConstructorException {
         for (Constructor<?> constructor : constructors) {
             if (constructor.getParameterCount() == 0) {
                 return constructor;
@@ -71,14 +76,15 @@ public class InjectProcessor {
         return constructorsWithInjectAnnotation.get(0);
     }
 
-    private <T extends AccessibleObject> List<T> getWithAnnotation(T[] injectableClassItems) {
+    private <T extends AccessibleObject> List<T> getWithAnnotation(final T[] injectableClassItems) {
         return Arrays.stream(injectableClassItems)
                 .filter(object -> Optional.ofNullable(object.getAnnotation(Inject.class)).isPresent())
                 .collect(Collectors.toList());
     }
 
-    private static class NotOnlyConstructorException extends Exception {
-        public NotOnlyConstructorException(String message) {
+    private static final class NotOnlyConstructorException extends RuntimeException {
+
+        NotOnlyConstructorException(String message) {
             super(message);
         }
     }
