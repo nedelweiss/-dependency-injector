@@ -3,10 +3,13 @@ package dependency_injector;
 import dependency_injector.custom_annotations.annotation_processor.ComponentProcessor;
 import dependency_injector.custom_annotations.annotation_processor.InjectProcessor;
 import dependency_injector.utils.FileUtils;
+import dependency_injector.utils.TreeNode;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class DependencyInjector {
@@ -24,7 +27,7 @@ public class DependencyInjector {
         ComponentProcessor componentProcessor = new ComponentProcessor();
         List<Class<?>> classesWithComponentAnnotation = componentProcessor.process(scannedClasses);
 
-        List<Object> injectedDependencies = new InjectProcessor().inject(classesWithComponentAnnotation);
+        Map<Object, List<TreeNode<Field>>> injectedDependencies = new InjectProcessor().inject(classesWithComponentAnnotation);
         LOGGER.info("Dependencies have been injected");
     }
 

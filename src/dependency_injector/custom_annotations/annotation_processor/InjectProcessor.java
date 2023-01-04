@@ -1,32 +1,59 @@
 package dependency_injector.custom_annotations.annotation_processor;
 
 import dependency_injector.custom_annotations.Inject;
+import dependency_injector.utils.TreeNode;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class InjectProcessor {
 
     private final Logger LOGGER = Logger.getLogger(InjectProcessor.class.getName());
 
-    public List<Object> inject(final List<Class<?>> classesToInject) {
-        final List<Object> result = new ArrayList<>();
+    public Map<Object, List<TreeNode<Field>>> inject(final List<Class<?>> classesToInject) {
+        final Map<Object, List<TreeNode<Field>>> tree = new HashMap<>();
         for (Class<?> classToInject : classesToInject) {
 //            List<Constructor<?>> constructors = getWithAnnotation(classToInject.getDeclaredConstructors());
 //            Object instanceByConstructor = createInstanceByConstructor(constructors);
 //            result.add(instanceByConstructor);
 
-            List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
-            result.addAll(createInstanceByField(fields));
+            final List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
+            final List<TreeNode<Field>> treeNodes = buildInjectableFieldsTree(fields);
+            tree.put(classesToInject, treeNodes);
         }
-        return result;
+        return tree;
+    }
+
+    private List<TreeNode<Field>> buildInjectableFieldsTree(final List<Field> injectableFields) {
+        final Set<TreeNode<Field>> fieldsTree = new HashSet<>();
+
+        TreeNode<Field> root = null;
+        for (Field field : injectableFields) {
+            root = new TreeNode<>(field);
+            final Class<?> fieldClass = field.getType();
+            try {
+                final List<Field> withAnnotation = getWithAnnotation(fieldClass.getDeclaredFields());
+                if (!withAnnotation.isEmpty()) {
+                    root.addChildren(buildInjectableFieldsTree(withAnnotation));
+                } else {
+                    fieldsTree.add(root);
+                }
+            } catch (Exception e) {
+                LOGGER.info("Couldn't handle the next field: " + fieldClass);
+            }
+        }
+        fieldsTree.add(root);
+        LOGGER.info("Injectable fields have been collected");
+        return new ArrayList<>(fieldsTree);
+    }
+
+    private Object createInstance() {
+//        Constructor<?> constructorWithoutParameters = processConstructors(someClass.getConstructors());
+//        constructorWithoutParameters.newInstance();
+        return null;
     }
 
     private Object createInstanceByConstructor(final List<Constructor<?>> injectableByConstructors) {
@@ -40,34 +67,12 @@ public class InjectProcessor {
         return instance;
     }
 
-    private List<Object> createInstanceByField(final List<Field> injectableFields) {
-        List<Object> createdInstances = new ArrayList<>();
-        for (Field field : injectableFields) {
-            Class<?> classOfField = field.getType();
-            try {
-                List<Field> withAnnotation = getWithAnnotation(classOfField.getDeclaredFields());
-                if (!withAnnotation.isEmpty()) {
-                    List<Object> instanceByField = createInstanceByField(withAnnotation);
-                    createdInstances.addAll(instanceByField);
-                }
-
-                Constructor<?> constructorWithoutParameters = processConstructors(classOfField.getConstructors());
-                createdInstances.add(constructorWithoutParameters.newInstance());
-                LOGGER.info("The instance has been created: " + classOfField);
-            } catch (Exception e) {
-                LOGGER.info("Couldn't create instance of: " + classOfField);
-            }
-        }
-        return createdInstances;
-    }
-
     private Constructor<?> processConstructors(final Constructor<?>[] constructors) throws NotOnlyConstructorException {
         for (Constructor<?> constructor : constructors) {
             if (constructor.getParameterCount() == 0) {
                 return constructor;
             }
         }
-
         // process the remaining constructors - check for @Inject annotation
         List<Constructor<?>> constructorsWithInjectAnnotation = getWithAnnotation(constructors);
         if (constructorsWithInjectAnnotation.size() != 1) {
@@ -78,8 +83,8 @@ public class InjectProcessor {
 
     private <T extends AccessibleObject> List<T> getWithAnnotation(final T[] injectableClassItems) {
         return Arrays.stream(injectableClassItems)
-                .filter(object -> Optional.ofNullable(object.getAnnotation(Inject.class)).isPresent())
-                .collect(Collectors.toList());
+            .filter(object -> Optional.ofNullable(object.getAnnotation(Inject.class)).isPresent())
+            .toList();
     }
 
     private static final class NotOnlyConstructorException extends RuntimeException {
