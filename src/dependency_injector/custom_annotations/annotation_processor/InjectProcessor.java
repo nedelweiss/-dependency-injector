@@ -13,6 +13,12 @@ public class InjectProcessor {
 
     private final Logger LOGGER = Logger.getLogger(InjectProcessor.class.getName());
 
+    private final ComponentProcessor componentProcessor;
+
+    public InjectProcessor(ComponentProcessor componentProcessor) {
+        this.componentProcessor = componentProcessor;
+    }
+
     public Map<Object, List<TreeNode<Field>>> inject(final List<Class<?>> classesToInject) {
         final Map<Object, List<TreeNode<Field>>> tree = new HashMap<>();
         for (Class<?> classToInject : classesToInject) {
@@ -22,7 +28,8 @@ public class InjectProcessor {
 
             final List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
             final List<TreeNode<Field>> treeNodes = buildInjectableFieldsTree(fields);
-            tree.put(classesToInject, treeNodes);
+
+            tree.put(classToInject, treeNodes);
         }
         return tree;
     }

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class PackageScanner {
 
-    private final Pattern PATTERN = Pattern.compile((".+?(?=.java)"));
+    private final Pattern CLASS_NAME_PATTERN = Pattern.compile((".+?(?=.java)"));
     private final Logger LOGGER = Logger.getLogger(PackageScanner.class.getName());
 
     List<Class<?>> scan(File directory, String packageName) {
@@ -45,7 +45,7 @@ public class PackageScanner {
     }
 
     private Optional<String> fileNameProcessing(String fileName) {
-        Matcher matcher = PATTERN.matcher(fileName);
+        final Matcher matcher = CLASS_NAME_PATTERN.matcher(fileName);
         if (matcher.find()) {
             return Optional.of(matcher.group());
         }
