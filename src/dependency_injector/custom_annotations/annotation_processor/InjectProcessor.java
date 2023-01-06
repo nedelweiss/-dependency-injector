@@ -6,7 +6,10 @@ import dependency_injector.utils.TreeNode;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class InjectProcessor {
@@ -19,42 +22,39 @@ public class InjectProcessor {
         this.componentProcessor = componentProcessor;
     }
 
-    public Map<Object, List<TreeNode<Field>>> inject(final List<Class<?>> classesToInject) {
-        final Map<Object, List<TreeNode<Field>>> tree = new HashMap<>();
+    public List<TreeNode<InjectableMetadata>> inject(final List<Class<?>> classesToInject) {
+        final List<TreeNode<InjectableMetadata>> tree = new ArrayList<>();
         for (Class<?> classToInject : classesToInject) {
 //            List<Constructor<?>> constructors = getWithAnnotation(classToInject.getDeclaredConstructors());
 //            Object instanceByConstructor = createInstanceByConstructor(constructors);
 //            result.add(instanceByConstructor);
-
-            final List<Field> fields = getWithAnnotation(classToInject.getDeclaredFields());
-            final List<TreeNode<Field>> treeNodes = buildInjectableFieldsTree(fields);
-
-            tree.put(classToInject, treeNodes);
+            try {
+                tree.add(buildInjectableFieldsTree(classToInject, null));
+            } catch (Exception e) {
+                LOGGER.info("Couldn't handle class: " + classesToInject);
+            }
         }
         return tree;
     }
 
-    private List<TreeNode<Field>> buildInjectableFieldsTree(final List<Field> injectableFields) {
-        final Set<TreeNode<Field>> fieldsTree = new HashSet<>();
+    private TreeNode<InjectableMetadata> buildInjectableFieldsTree(
+        final Class<?> classToInject,
+        final Field fieldToInject
+    ) {
+        TreeNode<InjectableMetadata> root = new TreeNode<>(new InjectableMetadata(fieldToInject, classToInject));
 
-        TreeNode<Field> root = null;
-        for (Field field : injectableFields) {
-            root = new TreeNode<>(field);
-            final Class<?> fieldClass = field.getType();
+        List<Field> withAnnotation = getWithAnnotation(classToInject.getDeclaredFields());
+        for (Field field : withAnnotation) {
+            Class<?> fieldClass = field.getType();
             try {
-                final List<Field> withAnnotation = getWithAnnotation(fieldClass.getDeclaredFields());
-                if (!withAnnotation.isEmpty()) {
-                    root.addChildren(buildInjectableFieldsTree(withAnnotation));
-                } else {
-                    fieldsTree.add(root);
-                }
+                root.addChild(buildInjectableFieldsTree(fieldClass, field));
             } catch (Exception e) {
                 LOGGER.info("Couldn't handle the next field: " + fieldClass);
             }
         }
-        fieldsTree.add(root);
+
         LOGGER.info("Injectable fields have been collected");
-        return new ArrayList<>(fieldsTree);
+        return root;
     }
 
     private Object createInstance() {

@@ -2,15 +2,13 @@ package dependency_injector;
 
 import dependency_injector.custom_annotations.annotation_processor.ComponentProcessor;
 import dependency_injector.custom_annotations.annotation_processor.InjectProcessor;
-import dependency_injector.instance.InstanceBuilder;
+import dependency_injector.custom_annotations.annotation_processor.InjectableMetadata;
 import dependency_injector.utils.FileUtils;
 import dependency_injector.utils.TreeNode;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class DependencyInjector {
@@ -28,11 +26,11 @@ public class DependencyInjector {
         ComponentProcessor componentProcessor = new ComponentProcessor(); // TODO: inline
         List<Class<?>> classesWithComponentAnnotation = componentProcessor.process(scannedClasses); // TODO: get rid of this
 
-        Map<Object, List<TreeNode<Field>>> injectedDependencies = new InjectProcessor(componentProcessor)
+        List<TreeNode<InjectableMetadata>> injectedDependencies = new InjectProcessor(componentProcessor)
             .inject(classesWithComponentAnnotation);
 
-        InstanceBuilder instanceBuilder = new InstanceBuilder();
-        instanceBuilder.build(injectedDependencies);
+//        InstanceBuilder instanceBuilder = new InstanceBuilder();
+//        instanceBuilder.build(injectedDependencies);
 
         LOGGER.info("Dependencies have been injected");
     }
