@@ -1,4 +1,4 @@
-package dependency_injector.custom_annotations;
+package dependency_injector.class_marker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.METHOD})
-public @interface Inject {
+@Target(ElementType.TYPE)
+public @interface Component {
 }

@@ -1,7 +1,7 @@
 package dependency_injector.test_package.sub_package;
 
-import dependency_injector.custom_annotations.Component;
-import dependency_injector.custom_annotations.Inject;
+import dependency_injector.class_marker.Component;
+import dependency_injector.class_marker.Inject;
 
 @Component
 public class ClassG {
