@@ -31,7 +31,7 @@ public class DependencyInjector {
             .buildInjectableFieldsTree(scannedClasses);
 
         InstanceBuilder instanceBuilder = new InstanceBuilder(injectProcessor);
-        instanceBuilder.build(injectableDependencies);
+        List<TreeNode<Object>> instances = instanceBuilder.build(injectableDependencies);
 
         LOGGER.info("Dependencies have been injected");
     }
