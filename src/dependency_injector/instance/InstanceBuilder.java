@@ -42,10 +42,14 @@ public class InstanceBuilder {
         return result;
     }
 
-    private <T> T createInstance(Class<?> aClass) {
+    private Object createInstance(Class<?> aClass) {
         Constructor<?>[] classConstructors = aClass.getDeclaredConstructors();
         Constructor<?> singleConstructor = processConstructors(classConstructors); // without parameters
-        return singleConstructor.newInstance();
+        try {
+            return singleConstructor.newInstance();
+        } catch (Exception e) {
+            throw new InstanceCreatingErrorException("Cannot create instance for: " + singleConstructor.getName(), e);
+        }
     }
 
     private Object createInstance() {
@@ -63,6 +67,7 @@ public class InstanceBuilder {
 //            LOGGER.info("Constructors were not found"); // TODO: but what about empty constructor which always exists?
 //        }
 //        return instance;
+        return null;
     }
 
     private Constructor<?> processConstructors(final Constructor<?>[] constructors) {
@@ -71,18 +76,20 @@ public class InstanceBuilder {
                 return constructor;
             }
         }
-        // process the remaining constructors - check for @Inject annotation
-        List<Constructor<?>> constructorsWithInjectAnnotation = injectProcessor.getWithAnnotation(constructors);
-        if (constructorsWithInjectAnnotation.size() != 1) {
-            throw new NotOnlyConstructorException("Unable to define constructor");
-        }
-        return constructorsWithInjectAnnotation.get(0);
+        throw new RuntimeException(); // TODO: get rid of this bad practice
     }
 
     private static final class NotOnlyConstructorException extends RuntimeException {
 
         NotOnlyConstructorException(String message) {
             super(message);
+        }
+    }
+
+    private static final class InstanceCreatingErrorException extends RuntimeException {
+
+        InstanceCreatingErrorException(String message, Exception exception) {
+            super(message, exception);
         }
     }
 }

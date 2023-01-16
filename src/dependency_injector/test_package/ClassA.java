@@ -18,14 +18,4 @@ public class ClassA {
     private ClassE classE;
 
     private ClassC classC;
-
-    @Inject
-    public ClassA(ClassC classC) {
-
-    }
-
-    @Inject
-    public ClassA(ClassC classC, ClassE classE) {
-
-    }
 }
