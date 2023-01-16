@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Objects.isNull;
+
 public class PackageScanner {
 
     private final Pattern CLASS_NAME_PATTERN = Pattern.compile((".+?(?=.java)"));
@@ -20,32 +22,32 @@ public class PackageScanner {
     List<Class<?>> scan(final File directory, final String packageName) {
         File[] files = directory.listFiles();
 
-        List<Class<?>> classes = new ArrayList<>();
-        if (!Files.exists(Paths.get(directory.getPath())) || files == null) {
+        final List<Class<?>> classes = new ArrayList<>();
+        if (!Files.exists(Paths.get(directory.getPath())) || isNull(files)) {
             return classes;
         }
 
         for (File file : files) {
-            String parentPackage = packageName + FileUtils.PACKAGE_SEPARATOR;
+            final String parentPackage = packageName + FileUtils.PACKAGE_SEPARATOR;
 
             if (file.isDirectory()) {
                 classes.addAll(scan(file, parentPackage + file.getName()));
             } else {
                 try {
-                    Optional<String> fileName = fileNameProcessing(file.getName());
+                    final Optional<String> fileName = processFileName(file.getName());
                     if (fileName.isEmpty()) continue;
 
                     classes.add(Class.forName(parentPackage + fileName.get()));
                 } catch (ClassNotFoundException e) {
-                    LOGGER.info(e.getException().getClass().toString());
+                    LOGGER.info("Class isn't exists: " + e.getException().getClass().toString());
                 }
             }
         }
         return classes;
     }
 
-    private Optional<String> fileNameProcessing(final String fileName) {
-        final Matcher matcher = CLASS_NAME_PATTERN.matcher(fileName);
+    private Optional<String> processFileName(final String fileName) {
+        Matcher matcher = CLASS_NAME_PATTERN.matcher(fileName);
         if (matcher.find()) {
             return Optional.of(matcher.group());
         }
