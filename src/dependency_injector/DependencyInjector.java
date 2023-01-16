@@ -1,9 +1,9 @@
 package dependency_injector;
 
-import dependency_injector.class_marker.processor.ComponentProcessor;
-import dependency_injector.class_marker.processor.InjectProcessor;
-import dependency_injector.class_marker.processor.InjectableDependenciesTreeBuilder;
-import dependency_injector.class_marker.processor.InjectableMetadata;
+import dependency_injector.class_marker.class_marker_processor.ComponentProcessor;
+import dependency_injector.class_marker.class_marker_processor.InjectProcessor;
+import dependency_injector.class_marker.class_marker_processor.InjectableDependenciesTreeBuilder;
+import dependency_injector.class_marker.class_marker_processor.InjectableMetadata;
 import dependency_injector.instance.InstanceBuilder;
 import dependency_injector.utils.FileUtils;
 import dependency_injector.utils.TreeNode;

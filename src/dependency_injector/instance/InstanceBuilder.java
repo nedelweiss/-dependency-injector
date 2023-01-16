@@ -1,6 +1,6 @@
 package dependency_injector.instance;
 
-import dependency_injector.class_marker.processor.InjectableMetadata;
+import dependency_injector.class_marker.class_marker_processor.InjectableMetadata;
 import dependency_injector.utils.TreeNode;
 
 import java.lang.reflect.Constructor;

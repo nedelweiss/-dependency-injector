@@ -12,7 +12,7 @@ public class FileUtils {
         // hide public constructor
     }
 
-    public static List<File> allFilesFromFolder(File directory) {
+    public static List<File> getAllFilesFromFolder(File directory) {
         List<File> directoryContent = new ArrayList<>();
         File[] files = directory.listFiles();
 
@@ -22,7 +22,7 @@ public class FileUtils {
 
         for (final File file : files) {
             if (file.isDirectory()) {
-                allFilesFromFolder(file);
+                getAllFilesFromFolder(file);
             } else {
                 directoryContent.add(file);
             }

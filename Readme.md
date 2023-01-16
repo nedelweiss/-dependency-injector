@@ -5,3 +5,4 @@
 #### TODO list:
 - create injecting with constructors logic
 - create injecting with setters logic
+- add tests

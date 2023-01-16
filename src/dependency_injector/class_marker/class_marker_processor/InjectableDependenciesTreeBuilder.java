@@ -1,4 +1,4 @@
-package dependency_injector.class_marker.processor;
+package dependency_injector.class_marker.class_marker_processor;
 
 import dependency_injector.utils.TreeNode;
 
