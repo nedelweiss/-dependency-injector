@@ -17,7 +17,7 @@ public class PackageScanner {
     private final Pattern CLASS_NAME_PATTERN = Pattern.compile((".+?(?=.java)"));
     private final Logger LOGGER = Logger.getLogger(PackageScanner.class.getName());
 
-    List<Class<?>> scan(File directory, String packageName) {
+    List<Class<?>> scan(final File directory, final String packageName) {
         File[] files = directory.listFiles();
 
         List<Class<?>> classes = new ArrayList<>();
@@ -44,7 +44,7 @@ public class PackageScanner {
         return classes;
     }
 
-    private Optional<String> fileNameProcessing(String fileName) {
+    private Optional<String> fileNameProcessing(final String fileName) {
         final Matcher matcher = CLASS_NAME_PATTERN.matcher(fileName);
         if (matcher.find()) {
             return Optional.of(matcher.group());

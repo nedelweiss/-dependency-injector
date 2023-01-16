@@ -30,8 +30,7 @@ public class DependencyInjector {
         List<TreeNode<InjectableMetadata>> injectableDependencies = new InjectableDependenciesTreeBuilder(componentProcessor, injectProcessor)
             .buildInjectableFieldsTree(scannedClasses);
 
-        InstanceBuilder instanceBuilder = new InstanceBuilder(injectProcessor);
-        List<TreeNode<Object>> instances = instanceBuilder.build(injectableDependencies);
+        List<TreeNode<Object>> instances = new InstanceBuilder().build(injectableDependencies); // TODO: need to cover by tests
 
         LOGGER.info("Dependencies have been injected");
     }
